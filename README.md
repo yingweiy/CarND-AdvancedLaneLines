@@ -2,8 +2,6 @@
 ## Advanced Lane Finding Project
 ---
 
-This report is still in process...
-
 **Advanced Lane Finding Project**
 
 The goals / steps of this project are the following:
@@ -19,10 +17,17 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
+[image1]: ./CamUndistorResult.png "Undistorted"
+[test1]: ./test_images/test1.jpg "Road Transformed"
+[test1_undist]: ./output_images/test1_undist.jpg ""
+[test1_th]: ./output_images/test1_th.jpg ""
+[test1_roi]: ./output_images/test1_roi.jpg ""
+[test1_lines]: ./output_images/test1_lines.jpg ""
+[test1_warped]: ./output_images/test1_warped.jpg ""
+[test1_final]: ./output_images/test1_final.jpg ""
+
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
+[perspective]: ./output_images/perspectiveTransform.jpg "Warp Example"
 [image5]: ./examples/color_fit_lines.jpg "Fit Visual"
 [image6]: ./examples/example_output.jpg "Output"
 [video1]: ./project_video.mp4 "Video"
@@ -43,72 +48,131 @@ You're reading it!
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
-The code for this step is contained in the first code cell of the IPython notebook located in "./examples/example.ipynb" (or in lines # through # of the file called `some_file.py`).  
+Camera matrix and distortion coefficients are computed by the function "CamCalibration()" in CamCalibration.py line 7-35.
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+I start by preparing "object points", which will be the (x, y, z) coordinates of the 
+chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) 
+plane at z=0, such that the object points are the same for each calibration image.  
+Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended 
+with a copy of it every time I successfully detect all chessboard corners in a test image.  
+`imgpoints` will be appended with the (x, y) pixel position of each of the corners in 
+the image plane with each successful chessboard detection.  
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+I then used the output `objpoints` and `imgpoints` to compute the camera calibration 
+and distortion coefficients using the `cv2.calibrateCamera()` function. The matrices are saved in 
+a pickle file named "cam_calib.p" for future use.  
+
+The image undistortion is implemented in the function corners_unwarp() in CamUndistort.py, I applied this distortion correction to the test image using 
+the `cv2.undistort()` function and followed by `cv2.warpPerspective()`. The result is shown below: 
 
 ![alt text][image1]
 
 ### Pipeline (single images)
 
+The pipeline code is in P4.ipynb jupyter notebook file.
+
 #### 1. Provide an example of a distortion-corrected image.
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+This step is implemented in the cell under "1. Camera Undistort" section in the jupyter notebook.
+
+To demonstrate this step, I will describe how I apply the distortion correction to one of
+ the test images like this one:
+![alt text][test1]
+
+the undistor image looks like below:
+
+![alt text][test1_undist]
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+This step is implemented in the cell under "2. Color and gradient thresholding" section
+ in the jupyter notebook.
 
-![alt text][image3]
+I used a combination of color and gradient thresholds to generate a pseudo-colored image. The red 
+channel is the edge channel by Sobel filter, the green is the saturation channel filtering, while
+the blue channel is the hue channel filtering results.
+  
+Here's an example of my output for this step. 
+ 
+![alt text][test1_th]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+This step is implemented in the cell under "4. Perspect Transform" section
+ in the jupyter notebook.
+
+The code for my perspective transform includes a function called `PerspectiveTransform()`, 
+The function takes as inputs an image (`img`). 
+I chose the hardcode the source and destination points in the following manner:
 
 ```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+y, x = img.shape[0], img.shape[1]    
+    hx1, hx2 = 548, 736
+    hy = 461   #the horizon
+    offset = 200
+    src = np.float32([[hx1, hy], [hx2, hy], [0, y-1], [x-1, y-1]])    
+    dst = np.float32([[offset, 0], [x-1-offset, 0], [offset, y-1], [x-1-offset, y-1]])
 ```
 
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 548, 461      | 200, 0        | 
+| 736, 461      | 1079, 0      |
+| 0, 719        | 200, 719      |
+| 1279, 719      | 1079, 0        |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![alt text][perspective]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
 
-![alt text][image5]
+This step is implemented in the cell under "5. Tracking Lanes" section
+ in the jupyter notebook.
+ 
+The main function of this part is the ``TrackingLanes()`` function. It contains the following steps:
+* Calculating the histogram of the pixels in the image, and smooth it using a gaussian filter, as defined
+in function ``FindPeakInSegment()``. The function then return the left peak position (lp) and right 
+peak location (rp) for the whole lane lines.
+*  Estimating the width of the lane in pixel by width = rp-lp
+* Apply a point selection to get the left lane points in an array LPA and right lane line points 
+RPA. This is implemented in function ``LanePointsSelection()``
+* Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+
+![alt text][test1_lines]
+
+and for this particular example, the perspective transformed result is:
+
+![alt text][test1_warped]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+This step is implemented in the cell under "5. Tracking Lanes" section
+ in the jupyter notebook, in the function ``TrackingLanes()``. Note that the ``width`` variable
+ below is calculated width from previous step for a more accurate estimation of curvature. 
+
+```python
+# Define conversions in x and y from pixels space to meters
+ym_per_pix = 30/720 # meters per pixel in y dimension
+xm_per_pix = 3.7/width # meters per pixel in x dimension
+
+left_fit_cr = np.polyfit(ploty*ym_per_pix, left_fitx*xm_per_pix, 2)   
+left_curverad = ((1 + (2*left_fit_cr[0]*y_eval*ym_per_pix + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+
+right_fit_cr = np.polyfit(ploty*ym_per_pix, right_fitx*xm_per_pix, 2)
+right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
+        
+``` 
+        
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+This step is implemented in the cell under "7. Lane Visualization" section
+ in the jupyter notebook, in the function ``DrawingLaneCarpet()``.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
-
-![alt text][image6]
+![alt text][test1_final]
 
 ---
 
@@ -116,7 +180,7 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./project_video_output.mp4)
 
 ---
 

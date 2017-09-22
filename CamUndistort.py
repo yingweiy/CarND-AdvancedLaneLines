@@ -11,7 +11,7 @@ mtx = dist_pickle["mtx"]
 dist = dist_pickle["dist"]
 
 # Read in an image
-img = cv2.imread('camera_cal/calibration1.jpg')
+img = cv2.imread('camera_cal/calibration3.jpg')
 
 nx = 9 # the number of inside corners in x
 ny = 6 # the number of inside corners in y
