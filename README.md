@@ -88,11 +88,10 @@ the undistor image looks like below:
 This step is implemented in the cell under "2. Color and gradient thresholding" section
  in the jupyter notebook.
 
-I used a combination of color and gradient thresholds to generate a pseudo-colored image. The red 
-channel is the edge channel by Sobel filter, the green is the saturation channel filtering, while
-the blue channel is the hue channel filtering results.
-  
-Here's an example of my output for this step. 
+Here's an example of my output for this step. I used a combination of color and gradient thresholds to generate a pseudo-colored image:
+* Red channel: the edge channel by Sobel filter.
+* Green channel: the saturation channel filtering.
+* Blue channel: the hue channel filtering results.
  
 ![alt text][test1_th]
 
@@ -107,11 +106,11 @@ I chose the hardcode the source and destination points in the following manner:
 
 ```python
 y, x = img.shape[0], img.shape[1]    
-    hx1, hx2 = 548, 736
-    hy = 461   #the horizon
-    offset = 200
-    src = np.float32([[hx1, hy], [hx2, hy], [0, y-1], [x-1, y-1]])    
-    dst = np.float32([[offset, 0], [x-1-offset, 0], [offset, y-1], [x-1-offset, y-1]])
+hx1, hx2 = 548, 736
+hy = 461   #the horizon
+offset = 200
+src = np.float32([[hx1, hy], [hx2, hy], [0, y-1], [x-1, y-1]])    
+dst = np.float32([[offset, 0], [x-1-offset, 0], [offset, y-1], [x-1-offset, y-1]])
 ```
 
 This resulted in the following source and destination points:
