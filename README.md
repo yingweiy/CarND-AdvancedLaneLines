@@ -182,10 +182,36 @@ This step is implemented in the cell under "7. Lane Visualization" section
 
 Here's a [link to my video result](./project_video_output_20170921.mp4)
 
+### Challenge 
+
+Here's a [link to my challenge video result](./challenge_video_output.mp4)
+
 ---
 
 ### Discussion
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+##### What works well
+* All the steps following the instructions work well. In addition, I found using the Gaussian 
+smoothing on the pixel histogram is useful to get a very stable peak locations as in the function ``FindPeakInSegment()``,
+also the interplation/smoothing from previous frame also useful.
+* In the challenge video, I added a color equilization function as below. I found this is very helpful
+preprocesing step to normalize the image.
+```python
+def equalizeHistColor(image):
+    img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+    # equalize the histogram of the Y channel
+    img_yuv[:,:,0] = cv2.equalizeHist(img_yuv[:,:,0])
+    # convert the YUV image back to RGB format
+    image_out = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+    return image_out
+```
+
+##### Limitations
+* The parameters are very hard-coded. For example, in the first challenge video, I used a different set 
+of parameters. This can be further improved. 
+* The left lane line in the last a few frames in the challenge video, especially on the top part seems
+not correct (too much bended to the right). It is due to the color of "yellow" line is very blurry.
+
+
