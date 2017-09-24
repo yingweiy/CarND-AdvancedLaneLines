@@ -105,6 +105,8 @@ ENV/
 /run_*
 run*.mp4
 
-#project_video_error/
-#project_video_input/
-#project_video_output/
+project_video_error/
+project_video_input/
+project_video_output/
+challenge_video_input/
+challenge_video_output/

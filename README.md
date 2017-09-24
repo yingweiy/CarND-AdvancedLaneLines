@@ -150,8 +150,7 @@ and for this particular example, the perspective transformed result is:
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
 This step is implemented in the cell under "5. Tracking Lanes" section
- in the jupyter notebook, in the function ``TrackingLanes()``. Note that the ``width`` variable
- below is calculated width from previous step for a more accurate estimation of curvature. 
+ in the jupyter notebook, in the function ``TrackingLanes()``.  
 
 ```python
 # Define conversions in x and y from pixels space to meters
@@ -165,7 +164,16 @@ right_fit_cr = np.polyfit(ploty*ym_per_pix, right_fitx*xm_per_pix, 2)
 right_curverad = ((1 + (2*right_fit_cr[0]*y_eval*ym_per_pix + right_fit_cr[1])**2)**1.5) / np.absolute(2*right_fit_cr[0])
         
 ``` 
+
+Note that the ``width`` variable
+ below is calculated width from previous step for a more accurate estimation of curvature.
+    
+```python
+lp, rp, hist = FindPeakInSegment(gray)
+width = rp - lp
+```
         
+The final reported curvature value in the video is the average of the left and right curvature radius.
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 This step is implemented in the cell under "7. Lane Visualization" section
