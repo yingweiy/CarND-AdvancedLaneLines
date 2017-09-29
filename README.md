@@ -189,6 +189,8 @@ This step is implemented in the cell under "7. Lane Visualization" section
 
 Here's a [link to my video result](./project_video_output.mp4)
 
+[![Alt Video Result on YouTube](https://img.youtube.com/vi/PYnOFS5ERGU/0.jpg)](https://youtu.be/PYnOFS5ERGU)
+
 ### Challenge 
 
 Here's a [link to my challenge video result](./challenge_video_output.mp4)
